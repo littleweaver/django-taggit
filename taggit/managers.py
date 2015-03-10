@@ -345,7 +345,7 @@ class _TaggableManager(models.Manager):
         return queryset
 
     @require_instance_manager
-    def similar_objects(self):
+    def similar_objects(self, **filters):
         lookup_kwargs = self._lookup_kwargs()
         lookup_keys = sorted(lookup_kwargs)
         qs = self.through.objects.values(*six.iterkeys(lookup_kwargs))
@@ -353,6 +353,9 @@ class _TaggableManager(models.Manager):
         qs = qs.exclude(**lookup_kwargs)
         qs = qs.filter(tag__in=self.all())
         qs = qs.order_by('-n')
+
+        if filters:
+            qs = qs.filter(**filters)
 
         # TODO: This all feels like a bit of a hack.
         items = {}
